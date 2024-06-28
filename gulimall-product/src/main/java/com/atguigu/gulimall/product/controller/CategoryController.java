@@ -26,7 +26,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @RequestMapping("/treeList")
+    @RequestMapping("/list/tree")
     public R treeList(){
         List<CategoryEntity> categoryEntityList = categoryService.treeList();
         return R.ok().put("data", categoryEntityList);
