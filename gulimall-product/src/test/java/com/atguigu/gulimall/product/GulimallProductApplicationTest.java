@@ -4,6 +4,7 @@ import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.service.BrandService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,6 +18,13 @@ public class GulimallProductApplicationTest {
     private BrandService brandService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Test
+    public void testRedisClient() {
+        System.out.println(redissonClient);
+    }
 
     @Test
     public void test1() {
@@ -29,6 +37,6 @@ public class GulimallProductApplicationTest {
     @Test
     public void testRedis() {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        ops.set("hello","world");
+        ops.set("hello", "world");
     }
 }

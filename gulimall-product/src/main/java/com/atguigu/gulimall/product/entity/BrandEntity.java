@@ -6,7 +6,7 @@ import com.atguigu.common.valid.UpdateGroup;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.hibernate.validator.constraints.URL;
+//import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
@@ -38,7 +38,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌logo地址
 	 */
-	@URL(message = "logo地址必须是url链接",groups = {AddGroup.class,UpdateGroup.class})
+//	@URL(message = "logo地址必须是url链接",groups = {AddGroup.class,UpdateGroup.class})
 	@NotBlank(message = "logo地址不能为空",groups = {AddGroup.class,UpdateGroup.class})
 	private String logo;
 	/**
