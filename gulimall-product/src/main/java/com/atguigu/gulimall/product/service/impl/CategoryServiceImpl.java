@@ -14,7 +14,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private CategoryBrandRelationService categoryBrandRelationService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -64,6 +69,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return paths.toArray(new Long[paths.size()]);
     }
 
+    @CacheEvict(value = "categoryEntityList",key = "'getCategoryEntityList'")
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
@@ -73,6 +79,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public List<CategoryEntity> getLevelOneCategorys() {
+        System.out.println("getLevelOneCategorys...");
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0L));
     }
 
@@ -92,10 +99,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return result;
     }
 
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFormDBWithRedissonLock() {
+        RLock lock = redisson.getLock("catalogJson-lock");
+        lock.lock();
+        Map<String, List<Catelog2Vo>> dataFromDB;
+        try {
+            dataFromDB = getDataFromDB();
+        } finally {
+            lock.unlock();
+        }
+        return dataFromDB;
+    }
+
     public Map<String, List<Catelog2Vo>> getCatalogJsonFormDBWithRedisLock() {
         //占分布式锁
         String uuid = UUID.randomUUID().toString();
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,30,TimeUnit.SECONDS);
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid, 30, TimeUnit.SECONDS);
         if (lock) {
             log.debug("获取分布式锁成功");
             //加锁成功

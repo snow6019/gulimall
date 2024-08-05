@@ -21,7 +21,17 @@ spring:
   redis:
     host: localhost
     port: 6379
-
+  cache:
+    type: redis
+    # 过期时间
+    redis:
+      time-to-live: 3600000
+      # 是否开启前缀，默认为true
+      use-key-prefix: true
+      # 键的前缀，如果不配置，默认就是缓存名cacheNames
+#      key-prefix: CACHE_
+      # 是否缓存空置，防止缓存穿透，默认为true
+      cache-null-values: true
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
