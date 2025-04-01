@@ -119,6 +119,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             log.debug("获取分布式锁成功");
             //加锁成功
             /**
+             *
              * 问题一：程序执行到这步getDataFromDB()方法出现异常 导致程序没有正常解锁
              * 或者程序执行完getDataFromDB()方法后机器突然宕机导致程序没有正常解锁
              * 解决方法：设置过期时间

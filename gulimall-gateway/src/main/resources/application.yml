@@ -50,12 +50,6 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
-        ##多一个/renren-fast/是因为renren-fast微服务有这么一个server: servlet: context-path: /renren-fast 配置
-
-        - id: gulimall_host_route
-          uri: lb://gulimall-product
-          predicates:
-            - Host=gulimall.com,item.gulimall.com
 
         - id: gulimall_search_route
           uri: lb://gulimall-search
@@ -86,7 +80,8 @@ spring:
           uri: lb://gulimall-seckill
           predicates:
             - Host=seckill.gulimall.com
-
-## 前端项目，/api
-## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
-## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree
+        # 其他都路由到product
+        - id: gulimall_host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com
